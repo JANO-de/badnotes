@@ -1,0 +1,50 @@
+name: AppImage
+on:
+  push:
+    branches: [main]
+    tags: ['v*']
+  workflow_dispatch:
+permissions:
+  contents: write
+jobs:
+  build:
+    runs-on: ubuntu-22.04
+    steps:
+      - uses: actions/checkout@v4
+      - uses: jurplel/install-qt-action@v4
+        with:
+          version: '6.8.*'
+          cache: true
+      - name: Deps
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y ninja-build libgl1-mesa-dev libvulkan-dev libxkbcommon-dev libxkbcommon-x11-0 \
+            libwayland-dev libxcb-cursor0 libxcb-icccm4 libxcb-image0 libxcb-keysyms1 libxcb-render-util0 \
+            libxcb-xinerama0 libfuse2 libfontconfig1-dev
+      - name: Build
+        run: |
+          cmake -S . -B build -G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_INSTALL_PREFIX=/usr -DINKWELL_BUILD=${{ github.sha }}
+          cmake --build build
+          DESTDIR=AppDir cmake --install build
+      - name: AppImage
+        env:
+          APPIMAGE_EXTRACT_AND_RUN: 1
+          QML_SOURCES_PATHS: ${{ github.workspace }}/qml
+          EXTRA_PLATFORM_PLUGINS: libqwayland-generic.so;libqwayland-egl.so
+          EXTRA_QT_PLUGINS: waylandcompositor;wayland-decoration-client;wayland-graphics-integration-client;wayland-shell-integration
+          VERSION: ${{ github.ref_name }}
+        run: |
+          wget -q https://github.com/linuxdeploy/linuxdeploy/releases/download/continuous/linuxdeploy-x86_64.AppImage
+          wget -q https://github.com/linuxdeploy/linuxdeploy-plugin-qt/releases/download/continuous/linuxdeploy-plugin-qt-x86_64.AppImage
+          chmod +x linuxdeploy*.AppImage
+          ./linuxdeploy-x86_64.AppImage --appdir AppDir --plugin qt --output appimage
+          mv Inkwell*.AppImage Inkwell-x86_64.AppImage
+      - uses: actions/upload-artifact@v4
+        with: { name: Inkwell-AppImage, path: Inkwell-x86_64.AppImage }
+      - name: Release (rolling "nightly" on main, versioned on tags)
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ startsWith(github.ref, 'refs/tags/') && github.ref_name || 'nightly' }}
+          prerelease: ${{ !startsWith(github.ref, 'refs/tags/') }}
+          body: ${{ github.sha }}
+          files: Inkwell-x86_64.AppImage

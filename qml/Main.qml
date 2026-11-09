@@ -10,6 +10,7 @@ ApplicationWindow {
     color: Theme.bg
 
     Notebook { id: nb }
+    Updater { id: updater; onUpdated: win.showToast(qsTr("Update installed — restart Inkwell to apply"), Theme.accent) }
     NotebookView { id: view; anchors.fill: parent; notebook: nb }
 
     FloatingToolbar {
@@ -54,13 +55,15 @@ ApplicationWindow {
         property alias text: toastText.text
         anchors.horizontalCenter: parent.horizontalCenter; y: 84
         width: toastText.implicitWidth + 32; height: 36; radius: 18
-        color: "#ff453a"; opacity: 0; visible: opacity > 0
+        property color tone: "#ff453a"
+        color: tone; opacity: 0; visible: opacity > 0
         Behavior on opacity { NumberAnimation { duration: 200 } }
         Text { id: toastText; anchors.centerIn: parent; color: "white"; font.pixelSize: 13 }
         Timer { id: toastTimer; interval: 3500; onTriggered: toast.opacity = 0 }
     }
     Connections {
         target: nb
-        function onError(msg) { toast.text = msg; toast.opacity = 1; toastTimer.restart() }
+        function onError(msg) { win.showToast(msg, "#ff453a") }
     }
+    function showToast(msg, tone) { toast.text = msg; toast.tone = tone; toast.opacity = 1; toastTimer.restart() }
 }

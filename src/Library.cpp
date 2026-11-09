@@ -162,6 +162,10 @@ int Library::addNotebook(const QString &title, const QString &afterTitle) {
     return at;
 }
 
+int Library::addNotebookAfter(const QString &title, const QString &afterTitle) {
+    return addNotebook(title, afterTitle);
+}
+
 bool Library::removeNotebook(int index) {
     if (index < 0 || index >= m_notebooks.size()) return false;
     if (m_notebooks.size() == 1) return false;
@@ -229,4 +233,9 @@ void Library::undo() {
 
 void Library::redo() {
     // Could implement global redo across notebooks
+}
+
+bool Library::saveCurrent() {
+    saveStorage();
+    return true;
 }

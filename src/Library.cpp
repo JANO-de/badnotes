@@ -195,7 +195,7 @@ void Library::setCurrent(int index) {
     emit currentChanged();
 }
 
-Notebook *Library::notebookAt(int index) const {
+Notebook *Library::notebookAt(int index) {
     Q_UNUSED(index)
     return nullptr;
 }
@@ -225,10 +225,8 @@ void Library::newNotebook() {
 
 void Library::undo() {
     // Could implement global undo across notebooks
-    Q_UNUSED(undo)
 }
 
 void Library::redo() {
     // Could implement global redo across notebooks
-    Q_UNUSED(redo)
 }

@@ -21,7 +21,7 @@ class Library : public QAbstractListModel {
     Q_OBJECT
     QML_ELEMENT
     Q_PROPERTY(QList<NotebookInfo> notebooks READ notebooks NOTIFY notebooksChanged)
-    Q_PROPERTY(NotebookInfo current NOTIFY currentChanged)
+    Q_PROPERTY(NotebookInfo current READ current NOTIFY currentChanged)
 public:
     enum Roles {
         NotebookRole = Qt::UserRole + 1,
@@ -34,8 +34,12 @@ public:
     explicit Library(QObject *parent = nullptr);
     ~Library() override;
 
-    QList<NotebookInfo> notebooks() const { return m_notebooks; }
-    NotebookInfo current() const { return m_current; }
+    QList<NotebookInfo> notebooks() const;
+    NotebookInfo current() const;
+
+    int rowCount(const QModelIndex &parent = QModelIndex()) const override;
+    QVariant data(const QModelIndex &idx, int role = Qt::DisplayRole) const override;
+    QHash<int, QByteArray> roleNames() const override;
 
     Q_INVOKABLE int addNotebook(const QString &title, const QString &after = "");
     Q_INVOKABLE int addNotebookAfter(const QString &title, const QString &afterTitle);

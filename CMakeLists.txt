@@ -8,11 +8,12 @@ qt_standard_project_setup(REQUIRES 6.6)
 
 set_source_files_properties(qml/Theme.qml PROPERTIES QT_QML_SINGLETON_TYPE TRUE)
 
-qt_add_executable(inkwell src/main.cpp src/InkCanvas.cpp src/InkCanvas.h)
+qt_add_executable(inkwell src/main.cpp src/InkCanvas.cpp src/InkCanvas.h
+  src/InkPage.cpp src/InkPage.h src/Notebook.cpp src/Notebook.h src/Tools.h)
 qt_add_qml_module(inkwell
   URI Inkwell VERSION 1.0
-  QML_FILES qml/Main.qml qml/Theme.qml qml/GlassPanel.qml qml/FloatingToolbar.qml
-            qml/PageSidebar.qml qml/NotebookView.qml
+  QML_FILES qml/Main.qml qml/Theme.qml qml/GlassPanel.qml qml/GlassButton.qml qml/FloatingToolbar.qml
+            qml/PageBar.qml qml/PageSidebar.qml qml/NotebookView.qml
 )
 target_include_directories(inkwell PRIVATE src)
 target_link_libraries(inkwell PRIVATE Qt6::Quick Qt6::QuickControls2 Qt6::Qml Qt6::Gui)

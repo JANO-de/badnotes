@@ -1,0 +1,7 @@
+[Desktop Entry]
+Type=Application
+Name=Inkwell
+Comment=Handwritten notes
+Exec=inkwell
+Icon=inkwell
+Categories=Office;Graphics;
